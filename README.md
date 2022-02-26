@@ -12,5 +12,6 @@ App to create you metro station
  ```
  pip install -r requirements.txt
  ```
+ ```
  python3 main.py
 ```
