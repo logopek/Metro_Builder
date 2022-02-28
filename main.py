@@ -3,51 +3,78 @@ import random
 import pygame
 
 color = 1
+prevposes = {  # initialize previous positions
+    'red': (),
+    'green': (),
+    'blue': (),
+    'black': ()
+}
+abc = 'qwertyuiopasdfghjklzxcvbnm'  # random symbols
 
-abc = 'qwertyuiopasdfghjklzxcvbnm'
+
 class Metro_station(pygame.sprite.Sprite, pygame.font.Font):
+    '''Initialize metro station'''
+
     def __init__(self):
         super().__init__()
         global color
-        self.colors = ['red', 'green', 'blue', 'black']
-        self.image = pygame.image.load(f'Assets/{self.colors[color]}.png')
-        self.rect = self.image.get_rect(bottomright=pygame.mouse.get_pos())
-        self.text = pygame.font.SysFont('Segoe UI', 15, bold=True).render(''.join(random.choices(abc, k=7)), False, (0, 0, 0))
+        self.colors = ['red', 'green', 'blue', 'black']  # colors list
+        self.image = pygame.image.load(f'Assets/{self.colors[color]}.png')  # path to now color
+        self.rect = self.image.get_rect(
+            bottomright=(pygame.mouse.get_pos()[0] + 20, pygame.mouse.get_pos()[1] + 10))  # create rect of image
+        self.text = pygame.font.SysFont('Segoe UI', 15, bold=True).render(''.join(random.choices(abc, k=7)), False,
+                                                                          (0, 0, 0))  # name of station
 
-    def ru(self):
-        return self.image, self.rect, self.text
+
+class Lines(pygame.sprite.Sprite):
+    def __init__(self):
+        self.colors = ['red', 'green', 'blue', 'black']  # against
+
+    def draw(self, newpos, prevpos, surface):
+        '''Main task is draw line'''
+        try:
+            self.nowprevpos = prevposes[self.colors[color]]  # get previous position of now color
+            pygame.draw.line(surface=surface, color=self.colors[color], start_pos=(newpos[0] + 10, newpos[1] + 1),
+                             end_pos=self.nowprevpos, width=5)  # drawing a line
+        except:
+            pass
 
 
 def nextIndex():
     global color
-    if color == 3:
-        color = 0
+    # color index to create right circle
+    if color == len(Metro_station().colors) - 1:
+        color = 0  # setting 0 if index greater than list length
     else:
-        color += 1
+        color += 1  # add index
 
 
 def main():
-    screen = pygame.display.set_mode((1000, 1000))
-    screen.fill((255, 255, 255))
-    # move = False
+    global prevposes  # change global previous positions
+    screen = pygame.display.set_mode((1000, 1000))  # create display
+    screen.fill((255, 255, 255))  # fill white
+    colors = ['red', 'green', 'blue', 'black']  # against colors
     pygame.display.set_caption('Metro Builder')
     pygame.display.flip()
     done = False
-    sprites = []
     while not done:
         events = pygame.event.get()
         for event in events:
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT:  # quit
                 done = True
-            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                # move = False
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:  # unpressed left mouse button
 
-                object = Metro_station().ru()
-                print(object)
-                screen.blit(object[0], object[1])
-                screen.blit(object[2], (pygame.mouse.get_pos()[0] + 10, pygame.mouse.get_pos()[1] - 15))
+                object = Metro_station()  # new Metro_station
+
+                newpos = (pygame.mouse.get_pos())  # new position (its mouse position
+                Lines().draw(pygame.mouse.get_pos(), prevposes[colors[color]], screen)  # drawing line
+                screen.blit(object.image, object.rect)  # drawing metro
+
+                screen.blit(object.text, (pygame.mouse.get_pos()[0] + 10, pygame.mouse.get_pos()[1] - 15))  # draw text
+
+                prevposes[colors[color]] = (pygame.mouse.get_pos())  # change previous position
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 3:
-                nextIndex()
+                nextIndex()  # new index
 
         pygame.display.flip()
 
