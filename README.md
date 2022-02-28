@@ -15,3 +15,5 @@ App to create you metro station
  ```
  python3 main.py
 ```
+Screenshots:
+![Screenshot](https://user-images.githubusercontent.com/49311518/156045996-86382f98-3a0d-44f4-8c09-4a982dc9158a.png)
